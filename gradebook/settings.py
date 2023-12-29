@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gradebook',
+    'schedule.apps.ScheduleConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
