@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from users.models import Teacher, Parent, Student # noqa
+from ..users.models import Teacher, Parent, Student
 
 
 class Class(models.Model):
@@ -10,6 +10,9 @@ class Class(models.Model):
     students = models.ManyToManyField(Student, related_name='classes')
     english_group = models.ManyToManyField(Student, related_name='english_groups')
     ukrainian_group = models.ManyToManyField(Student, related_name='ukrainian_groups')
+
+    def __str__(self):
+        return self.class_name
 
 
 class Lesson(models.Model):
@@ -19,7 +22,7 @@ class Lesson(models.Model):
     subject = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.subject} - {self.date} - {self.class_obj.class_name}"
+        return f"{self.subject} - {self.date}"
 
 
 GRADE_TYPES = (
@@ -36,11 +39,16 @@ class Grade(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     grade_type = models.CharField(max_length=50, choices=GRADE_TYPES)
 
+    def __str__(self):
+        return self.value
 
 class GradeComment(models.Model):
     grade = models.ForeignKey(Grade, on_delete=models.CASCADE)
     author = models.ForeignKey(Parent, on_delete=models.CASCADE)
     text = models.TextField()
+
+    def __str__(self):
+        return f" {self.text} - {self.author}"
 
 
 class CalendarEvent(models.Model):
@@ -56,3 +64,6 @@ class Comment(models.Model):
     author_object = GenericForeignKey('content_type', 'object_id')
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.text} - {self.author_object}"
