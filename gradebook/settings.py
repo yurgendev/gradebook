@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'schedule.apps.ScheduleConfig',
     'users.apps.UsersConfig',
+    'schedule.apps.ScheduleConfig',
 ]
 
 MIDDLEWARE = [

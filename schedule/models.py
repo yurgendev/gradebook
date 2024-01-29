@@ -1,28 +1,29 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from ..users.models import Teacher, Parent, Student
+from django import forms
+from users.models import Teacher, Parent, Student
 
 
-class Class(models.Model):
-    class_name = models.CharField(max_length=50, unique=True, db_index=True)
+class SchoolClass(models.Model):
+    class_name = models.CharField(max_length=2, unique=True, db_index=True)
     students = models.ManyToManyField(Student, related_name='classes')
-    english_group = models.ManyToManyField(Student, related_name='english_groups')
-    ukrainian_group = models.ManyToManyField(Student, related_name='ukrainian_groups')
+
+    class Meta:
+        ordering = ['students__last_name', 'students__first_name']
 
     def __str__(self):
         return self.class_name
 
 
 class Lesson(models.Model):
-    date = models.DateField()
+    lesson_date = models.DateField()
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    class_obj = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='lessons')
     subject = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.subject} - {self.date}"
+        return f"{self.subject} - {self.lesson_date}"
 
 
 GRADE_TYPES = (
@@ -33,37 +34,42 @@ GRADE_TYPES = (
 )
 
 
+class Comment(models.Model):
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(Parent, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return f"{self.text} - {self.author}"
+
+
 class Grade(models.Model):
     value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     grade_type = models.CharField(max_length=50, choices=GRADE_TYPES)
+    comments = GenericRelation(Comment)
 
     def __str__(self):
         return self.value
 
-class GradeComment(models.Model):
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE)
-    author = models.ForeignKey(Parent, on_delete=models.CASCADE)
-    text = models.TextField()
-
-    def __str__(self):
-        return f" {self.text} - {self.author}"
-
 
 class CalendarEvent(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    lesson = models.ManyToManyField(Lesson)
+    student = models.ManyToManyField(Student)
     event_date = models.DateField()
-    description = models.TextField()
-
-
-class Comment(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    author_object = GenericForeignKey('content_type', 'object_id')
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.text} - {self.author_object}"
+        return f"{self.lesson.subject} - {self.student.name} - {self.event_date}"
+
+
+class CalendarEventForm(forms.ModelForm):
+    event_date = forms.DateField(widget=forms.SelectDateWidget())
+
+    class Meta:
+        model = CalendarEvent
+        fields = ['lesson', 'student', 'event_date', 'grade']
