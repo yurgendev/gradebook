@@ -18,20 +18,22 @@ class SchoolClass(models.Model):
 
 
 class Lesson(models.Model):
+    SUBJECT_CHOICES = [
+        ('math', 'Math'),
+        ('it', 'IT'),
+        ('english', 'English'),
+        ('ukrainian', 'The Ukrainian Language'),
+        ('deutch', 'Deutch'),
+        ('geography', 'Geography'),
+        ('art', 'Art'),
+    ]
+
     lesson_date = models.DateField()
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    subject = models.CharField(max_length=100)
+    subject = models.CharField(max_length=100, choices=SUBJECT_CHOICES)
 
     def __str__(self):
-        return f"{self.subject} - {self.lesson_date}"
-
-
-GRADE_TYPES = (
-    ('homework', 'Homework'),
-    ('test', 'Test'),
-    ('exam', 'Exam'),
-
-)
+        return f"{self.get_subject_display()} - {self.lesson_date}"
 
 
 class Comment(models.Model):
@@ -44,6 +46,14 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.text} - {self.author}"
+
+
+GRADE_TYPES = (
+    ('homework', 'Homework'),
+    ('test', 'Test'),
+    ('exam', 'Exam'),
+
+)
 
 
 class Grade(models.Model):
