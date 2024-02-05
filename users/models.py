@@ -33,8 +33,6 @@ class Person(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
-
-
     def __str__(self):
         components = [self.last_name, self.first_name, self.middle_name]
         formatted_str = ' '.join(component for component in components if component)
