@@ -4,6 +4,11 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.http import HttpResponse
+
+
+def main_menu(request):
+    return HttpResponse("<h1>this is main menu</h1>")
 
 
 def login_request(request):

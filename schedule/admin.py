@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import SchoolClass
+from .models import SchoolClass, Lesson, Comment, Grade, CalendarEvent
+
 
 
 class SchoolClassAdmin(admin.ModelAdmin):
@@ -9,3 +10,7 @@ class SchoolClassAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SchoolClass, SchoolClassAdmin)
+admin.site.register(Lesson)
+admin.site.register(Comment)
+admin.site.register(Grade)
+admin.site.register(CalendarEvent)

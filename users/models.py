@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import datetime, timedelta
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 class PersonManager(BaseUserManager):
@@ -20,13 +20,14 @@ class PersonManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class Person(AbstractBaseUser):
+class Person(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = PersonManager()
 
@@ -81,5 +82,5 @@ class Student(Person):
         permissions = [
             ("view_news", "Can view news"),
             ("view_grade", "Can view grade"),
-            ("add_diary_entry", "Can add diary entry"),
+            ("add_diary_notes", "can add diary notes"),
         ]
