@@ -12,6 +12,7 @@ class SchoolClassAdmin(admin.ModelAdmin):
 class SchoolClassAdmin(admin.ModelAdmin):
     list_display = ('class_name',)
     list_editable = ('class_name',)
+
     list_display_links = None
 
 

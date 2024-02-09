@@ -27,4 +27,5 @@ class ParentAdmin(admin.ModelAdmin):
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'date_of_birth')
     list_editable = ('email', 'date_of_birth')
+    list_filter = ('first_name', 'last_name')
     list_display_links = ('first_name', 'last_name')
