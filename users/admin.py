@@ -1,30 +1,31 @@
 from django.contrib import admin
-from .models import Person, Teacher, Parent, Student
+from .models import Teacher, Parent, Student
 
 
-@admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email')
-    list_editable = ('email',)
-    list_display_links = ('first_name', 'last_name')
+class HideLastLoginMixin:
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if not obj:
+            form.base_fields.pop('last_login', None)
+        return form
 
 
 @admin.register(Teacher)
-class TeacherAdmin(admin.ModelAdmin):
+class TeacherAdmin(HideLastLoginMixin, admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email')
     list_editable = ('email',)
     list_display_links = ('first_name', 'last_name')
 
 
 @admin.register(Parent)
-class ParentAdmin(admin.ModelAdmin):
+class ParentAdmin(HideLastLoginMixin, admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email')
     list_editable = ('email',)
     list_display_links = ('first_name', 'last_name')
 
 
 @admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
+class StudentAdmin(HideLastLoginMixin, admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'date_of_birth')
     list_editable = ('email', 'date_of_birth')
     list_filter = ('first_name', 'last_name')
