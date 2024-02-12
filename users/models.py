@@ -29,6 +29,8 @@ class Person(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
+
+
     objects = PersonManager()
 
     USERNAME_FIELD = 'email'
@@ -56,7 +58,7 @@ class Teacher(Person):
 
 
 class Parent(Person):
-    pass
+    children = models.ManyToManyField('Student')
 
     class Meta:
         permissions = [
